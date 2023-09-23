@@ -8,7 +8,6 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cart.db'
 db = SQLAlchemy(app)
 
@@ -49,17 +48,17 @@ def get_cart(user_id):
 # ADD TO CART: FUNCTION: 
 @app.route('/cart/<user_id>/add/<int:product_id>', methods = ['POST'])
 def add_to_cart(user_id, product_id):
-    # Simplified: assuming quantity is always 1 for simplicity
+    # QUANTITY IS 1 FOR SIMPLICITY: 
     cart_item = CartItem(user_id = user_id, product_id = product_id, quantity = 1)
     db.session.add(cart_item)
     db.session.commit()
-    return jsonify(cart_item.serialize), 201
+    return jsonify({"message": f"PRODUCT ID#: {product_id} WAS SUCCESSFULLY ADDED TO CART!"}), 201
 
 
 # REMOVE FROM CART: FUNCTION: 
 @app.route('/cart/<user_id>/remove/<int:product_id>', methods = ['POST'])
 def remove_from_cart(user_id, product_id):
-    # Simplified: assuming removing 1 quantity each time for simplicity
+    # QUANTITY IS 1 FOR SIMPLICITY: 
     cart_item = CartItem.query.filter_by(user_id = user_id, product_id = product_id).first_or_404()
     if cart_item.quantity > 1:
         cart_item.quantity -= 1
@@ -67,7 +66,7 @@ def remove_from_cart(user_id, product_id):
     else:
         db.session.delete(cart_item)
         db.session.commit()
-    return jsonify({'message': 'Product removed from cart'}), 200
+    return jsonify({"message": f"PRODUCT ID#: {product_id} WAS SUCCESSFULLY REMOVED FROM CART!"}), 200
 
 
 # CREATE DATABASE TABLES: FUNCTION: 
@@ -75,5 +74,8 @@ def remove_from_cart(user_id, product_id):
 def create_tables():
     db.create_all()
 
+
+# RUN THE APP! 
 if __name__ == '__main__':
-    app.run(port = 5001, debug = True)  # Running on a different port
+    # CART SERVICE RUNNING ON NEXT OVER PORT!
+    app.run(port = 5001, debug = True)
